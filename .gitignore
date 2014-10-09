@@ -1,12 +1,127 @@
-*.class
+package osu.cse2123;
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
-# Package Files #
-*.jar
-*.war
-*.ear
+public class Project03 {
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+	@SuppressWarnings("resource")
+	public static void main(String[] args) throws FileNotFoundException {
+		//1. Get and read file
+		Scanner in = new Scanner(System.in);
+		System.out.print("Enter database filename: ");
+		File file = new File(in.nextLine());
+		Scanner fname = new Scanner(file);
+			
+		
+		//2. Store info in object
+		SimpleMusicTrack music = new SimpleMusicTrack();
+		String song = fname.nextLine();
+		String album = fname.nextLine();
+		String artist = fname.nextLine();
+		while(fname.hasNext()) {
+			music.setSong(song);
+			music.setAlbum(album);
+			music.setArtist(artist);
+		}
+		
+		
+		//3. Print current and next song
+		SimplePlayList playlist = new SimplePlayList();
+		String curSong = music.getSong();
+		String nextSong = playlist.peekAtNextTrack().toString();
+		
+		String choice = "";
+		while(!playlist.isEmpty()) {
+			System.out.println("Currently playing: " + curSong);
+			System.out.println("Next track to play: " + nextSong);
+			if(music.getSong() != null) {
+				System.out.println("No Song Playing");
+			}
+			if(playlist.isEmpty()) {
+				System.out.println("Play list is empty – no more tracks");
+			}
+			
+			
+			//4. Option to add song info
+			System.out.println("[P]lay next track");
+			System.out.println("[A]dd a new track");
+			System.out.println("[Q]uit");
+			System.out.print("> ");
+			choice = fname.next().toUpperCase();
+			while(!choice.equals("P") && !choice.equals("A") && !choice.equals("Q")){
+				System.out.println("Error!");
+				System.out.println("[P]lay next track");
+				System.out.println("[A]dd a new track");
+				System.out.println("[Q]uit");
+				System.out.print("> ");
+				choice = fname.next().toUpperCase();
+			}
+			System.out.print("> " + choice);
+			
+			
+			//5. If user wants to play next song
+			while(choice.equals("P") && !playlist.isEmpty()) {
+				playlist.getNextTrack();
+			}
+			
+			
+			//6. If user wants to add new track
+			while(choice.equals("A") && !playlist.isEmpty()){
+				//Ask for new track info
+				System.out.print("Track Name: ");
+				String insong = in.nextLine();
+				while(in.nextLine().length()==0) {
+					System.out.print("Track Name: ");
+					insong = in.nextLine();
+				}
+				music.setSong(insong);
+				
+				System.out.print("Album: ");
+				String inalbum = in.nextLine();
+				while(in.nextLine().length()==0) {
+					System.out.print("Album: ");
+					inalbum = in.nextLine();
+				}
+				music.setAlbum(inalbum);
+				
+				System.out.print("Artist Name: ");
+				String inartist = in.nextLine();
+				while(in.nextLine().length()==0) {
+					System.out.print("Artist Name: ");
+					inartist = in.nextLine();
+				}
+				music.setArtist(inartist);
+				
+				//Check if ans is a correct input
+				System.out.print("Are you sure you want to add this track [y/n]? ");
+				String ans = in.nextLine().toUpperCase();
+				while(!ans.equals("Y") && !ans.equals("N")){
+					System.out.println("Error!");
+					System.out.print("Are you sure you want to add this track [y/n]? ");
+					ans = in.nextLine().toUpperCase();
+				}
+			}
+		}
+		
+		//7. If user wants to Quit
+		while(choice.equals("Q") && !playlist.isEmpty()) {
+			System.out.println("Tracks remaining in play list");
+			System.out.println("------------------------------------------------------------");
+			int num = 1;
+			while(!playlist.isEmpty()){
+				System.out.println(num + ": " + playlist.peekAtNextTrack() + " / " 
+						+ music.getArtist() + " / " + music.getAlbum());
+				playlist.getNextTrack();
+			}
+			System.exit(0);
+		}
+		if(choice.equals("Q") && playlist.isEmpty()) {
+			System.out.println("No tracks remaining");
+			System.exit(0);
+		}
+		
+	}
+
+}
